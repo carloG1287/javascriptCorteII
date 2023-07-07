@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registro de Actividades</title>
+</head>
+<body>
+  <h1>Registro de Actividades</h1>
+
+  <div>
+    <h2>Agregar Actividad</h2>
+    <input type="text" id="nuevaActividad" placeholder="Ingrese una actividad">
+    <button onclick="agregar()">Agregar</button>
+  </div>
+
+  <div>
+    <h2>Eliminar Actividad</h2>
+    <input type="number" id="indiceEliminar" placeholder="Ingrese el índice">
+    <button onclick="eliminar()">Eliminar</button>
+  </div>
+
+  <div>
+    <h2>Modificar Actividad</h2>
+    <input type="number" id="indiceModificar" placeholder="Ingrese el índice">
+    <input type="text" id="nuevaActividadModificar" placeholder="Ingrese la nueva actividad">
+    <button onclick="modificar()">Modificar</button>
+  </div>
+
+  <div>
+    <h2>Actividades Actuales</h2>
+    <ul id="actividadesList"></ul>
+  </div>
+
+  <script>
+    // Función para realizar una solicitud AJAX
+    function realizarSolicitud(method, url, data, callback) {
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            callback(xhr.responseText);
+          } else {
+            console.error('Error en la solicitud:', xhr.status);
+          }
+        }
+      };
+      xhr.open(method, url, true);
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.send(data);
+    }
+
+    // Leer el registro de actividades desde el almacenamiento local
+    var actividades = JSON.parse(localStorage.getItem('actividades')) || [];
+
+    // Función para guardar las actividades en el almacenamiento local
+    function guardarActividades() {
+      localStorage.setItem('actividades', JSON.stringify(actividades));
+    }
+
+    // Función para mostrar las actividades en la lista
+    function mostrarActividades() {
+      var actividadesList = document.getElementById('actividadesList');
+      actividadesList.innerHTML = '';
+
+      actividades.forEach(function (actividad) {
+        var li = document.createElement('li');
+        li.appendChild(document.createTextNode(actividad));
+        actividadesList.appendChild(li);
+      });
+    }
+
+    // Función para agregar una actividad al registro
+    function agregar() {
+      var nuevaActividad = document.getElementById('nuevaActividad').value;
+      actividades.push(nuevaActividad);
+      guardarActividades();
+      mostrarActividades();
+    }
+
+    // Función para eliminar una actividad del registro
+    function eliminar() {
+      var indiceEliminar = parseInt(document.getElementById('indiceEliminar').value);
+      if (indiceEliminar >= 0 && indiceEliminar < actividades.length) {
+        actividades.splice(indiceEliminar, 1);
+        guardarActividades();
+        mostrarActividades();
+      } else {
+        console.log('Índice inválido');
+      }
+    }
+
+    // Función para modificar una actividad en el registro
+    function modificar() {
+      var indiceModificar = parseInt(document.getElementById('indiceModificar').value);
+      var nuevaActividadModificar = document.getElementById('nuevaActividadModificar').value;
+      if (indiceModificar >= 0 && indiceModificar < actividades.length) {
+        actividades[indiceModificar] = nuevaActividadModificar;
+        guardarActividades();
+        mostrarActividades();
+      } else {
+        console.log('Índice inválido');
+      }
+    }
+
+    // Mostrar las actividades iniciales
+    mostrarActividades();
+  </script>
+</body>
+</html>
